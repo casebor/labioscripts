@@ -1,0 +1,144 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+#
+#  care_graph_metrics2
+#  
+#  Copyright 2016 Carlos Eduardo Sequeiros Borja <casebor@gmail.com>
+#  
+#  This program is free software; you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation; either version 2 of the License, or
+#  (at your option) any later version.
+#  
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#  
+#  You should have received a copy of the GNU General Public License
+#  along with this program; if not, write to the Free Software
+#  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+#  MA 02110-1301, USA.
+#  
+#  
+
+from os import system
+from sys import maxint
+from optparse import OptionParser
+from os.path import isfile, basename
+from numpy import loadtxt, amax, amin
+
+def error_input():
+    print("ERROR in input file(s) or parameters :'(")
+    parser.print_help()
+    quit()
+
+def get_y_max(data, colnums):
+    maxi = -maxint - 1
+    for col in colnums:
+	if amax(data[:, col]) > maxi:
+	    maxi = amax(data[:, col])
+    return str(maxi)
+
+def get_y_min(data, colnums):
+    mini = maxint
+    for col in colnums:
+	if amin(data[:, col]) < mini:
+	    mini = amin(data[:, col])
+    return str(mini)
+
+def main():
+    
+    gnufile = """set term pdf enhanced color dashed font "Times-Roman, 13"
+set style line 90 lt 1 lc 3
+set style line 90 lt rgb "#808080"
+set style line 81 lt 0
+set style line 81 lt rgb "#808080"
+set grid back linestyle 81
+set border 3 linestyle 90
+set output \""""
+    
+    # Check that the file exist
+    if (options.infile is None) or (not isfile(options.infile)):
+	error_input()
+    else:
+	if options.columns is None:
+	    error_input()
+	else:
+	    cls = options.columns.split(',')
+	    cols = []
+	    try:
+		for c in cls:
+		    # We add all the column numbers used to make the graph in an array
+		    if len(c.split('-')) > 1:
+			lims = c.split('-')
+			for i in range(int(lims[0]), int(lims[-1])+1):
+			    # When adding the column numbers for the use, we make sure that the numbers
+			    # correspond to the python numeration, this is, we substract a unit. This is
+			    # only because the python numeration is different from the gnuplot numeration
+			    # system :S
+			    cols.append(i-1)
+		    else:
+			cols.append(int(c)-1)
+	    except ValueError:
+		print('ERROR handling the column values -->' + options.columns + '<-- \nAre you sure you used correct numbers and ranges?')
+		parser.print_help()
+		quit()
+    data = loadtxt(options.infile, skiprows=1)
+    
+    # Get the titles of the columns
+    with open(options.infile, 'r') as inf:
+	titles = inf.readline().strip().split('\t')
+    
+    # Select the colors for the columns
+    colors = ['#a6cee3','#1f78b4','#b2df8a','#33a02c','#fb9a99','#e31a1c','#fdbf6f','#ff7f00','#cab2d6','#6a3d9a','#ffff99','#b15928']
+    if len(cols) > 12:
+	colors = []
+    
+    gnufile += options.output + '.pdf"\n'
+    xmax = str(len(data))
+    ymax = get_y_max(data, cols)
+    ymin = get_y_min(data, cols)
+    gnufile += 'set xrange [ 0 : ' + xmax + ' ] noreverse nowriteback\n'
+    gnufile += 'set yrange [ ' + ymin + ' : ' + ymax + ' ] noreverse nowriteback\n'
+    gnufile += 'set xtics font ", 6"\n'
+    gnufile += 'set ytics font ", 8"\n'
+    gnufile += 'set border 2 front linewidth 1.000\n'
+    gnufile += 'set xtics  norangelimit nomirror\n'
+    gnufile += 'set ytics border in scale 1,0.5 nomirror norotate  autojustify\n'
+    gnufile += 'set style fill solid 0.45 border\n'
+    gnufile += 'set xlabel "Time (ps)"\n'
+    gnufile += 'set key box\n'
+    gnufile += 'set key horizontal reverse samplen 2 width -2 maxrows 2 maxcols 12  font ", 8"\n'
+    gnufile += 'set key horizontal center bottom outside\n'
+    gnufile += 'set title "' + options.output + '"\n'
+    
+    # Create the line styles
+    for i in range(len(cols)):
+	gnufile += 'set style line ' + str(i+1) + ' lt 1 lw 2.5 ps 0.225 linecolor rgb "' + colors[i] + '"\n'
+    
+    # Plot the data
+    #gnufile += 'plot "' + options.infile + '" using:' + str(cols[0]) + ' with lines ls 1 title "' + titles[0] + '" smooth bezier'
+    gnufile += 'plot "' + options.infile + '" using:' + str(cols[0]+1) + ' with lines ls 1 title "' + titles[0][1:] + '" '
+    for i in range(1, len(cols)):
+	#gnufile += ', "' + options.infile + '" using:' + str(cols[i]) + ' with lines ls ' + str(i+1) + ' title "' + titles[i] + '" smooth bezier'
+	gnufile += ', "' + options.infile + '" using:' + str(cols[i]+1) + ' with lines ls ' + str(i+1) + ' title "' + titles[i] + '" '
+    gnufile += '\n'
+    
+    # Create a temporary file, run gnuplot and erase the temporary file
+    # IMPORTANT!!! If this filename mess with your work, change the name for another one
+    with open('.tempgnu.ini', 'w') as arq:
+	arq.write(gnufile)
+    system('gnuplot .tempgnu.ini')
+    system('rm .tempgnu.ini')
+    
+    return 0
+
+if __name__ == '__main__':
+    usage = 'usage: \"%prog args\"'
+    parser = OptionParser(usage)
+    parser.add_option('-i', '--in', action='store', type='string', dest='infile', help='The input data file where the data is.')
+    parser.add_option('-c', '--col', action='store', type='string', dest='columns', help='Column number of the data file to be used. If you use more than one data column, please write them comma separated without spaces or in a range.\t\t1,3,5 or 1-5,7-9,11\t\t\t')
+    parser.add_option('-o', '--out', action='store', type='string', dest='output', help='Name for the output file. Default is "plot".', default='plot')
+    (options, args) = parser.parse_args()
+    main()

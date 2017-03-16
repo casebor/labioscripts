@@ -1,0 +1,79 @@
+#!/bin/bash
+# -*- coding: utf-8 -*-
+#
+#  pdb_generator.sh
+#  
+#  Copyright 2016 Carlos Eduardo Sequeiros Borja <casebor@gmail.com>
+#  
+#  This program is free software; you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation; either version 2 of the License, or
+#  (at your option) any later version.
+#  
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#  
+#  You should have received a copy of the GNU General Public License
+#  along with this program; if not, write to the Free Software
+#  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+#  MA 02110-1301, USA.
+#  
+#  
+
+
+usage="$(basename "$0") [-h] [-y trajectory]
+
+where:
+    -h  show this help text
+    -y  Trajectory file in PDB format"
+
+var=false
+
+while getopts ':hy:' option; do
+  case "$option" in
+    h)  echo "$usage"
+        exit
+        ;;
+    y)  trajin=$OPTARG
+	if [ -f $trajin ]; then
+	    echo "Processing Trajectory file --> "$trajin
+	    var=true
+	else
+	    echo "Trajectory file -->"$parm"<-- does not exist!!!"
+	    echo "$usage"
+	    exit 1
+	fi
+	;;
+    :)  printf "Missing argument for -%s\n" "$OPTARG" >&2
+        echo "$usage" >&2
+        exit 1
+        ;;
+   \?)  printf "Illegal option: -%s\n" "$OPTARG" >&2
+        echo "$usage" >&2
+        exit 1
+        ;;
+  esac
+done
+shift $((OPTIND - 1))
+
+if [ $var == false ]; then
+    echo "ERROR processing the file"
+    echo "Is the correct format?"
+    exit 1
+fi
+
+i=1
+out_pdb=${trajin:0:-4}
+
+    #if echo "$name" | grep -q "ENDMDL"; then
+while read name; do
+    if grep -q "ENDMDL" <<< "$name"; then
+	let i=i+1
+    else
+	echo "$name" >> $out_pdb"_M"$i.pdb
+    fi
+done < $trajin
+
+rm $out_pdb"_M"$i.pdb

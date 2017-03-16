@@ -1,0 +1,137 @@
+#!/bin/bash
+
+output="pdf"
+
+if [ "$output" == "ps" ]
+then
+	term="postscript enhanced color dashed font \"Times-Roman, 13\""
+	output_extension="ps"
+elif [ "$output" == "pdf" ]
+then
+	term="pdf enhanced color dashed font \"Times-Roman, 13\""	
+	output_extension="pdf"
+else
+	term="pngcairo color dashed font \"Times-Roman,13\""
+	output_extension="png"
+fi
+
+gnuplot=/usr/bin/gnuplot
+
+# Check for gnuplot, and warn if not available.
+if [ ! -e $gnuplot ]; then
+  echo "Can't find gnuplot at $gnuplot."
+  echo "Gnuplot version 4.6.3 or later required."
+  exit 3
+fi
+
+symbol='$'
+
+echo | $gnuplot <<EOF
+
+set term ${term}
+
+#SOBRE O GRID
+# Line style for axes
+set style line 90 lt 1 lc 3
+set style line 90 lt rgb "#808080"
+# Line style for grid
+set style line 81 lt 0  # dashed
+set style line 81 lt rgb "#808080"  # grey
+
+set grid back linestyle 81
+
+set border 3 linestyle 90 
+
+# set terminal png transparent nocrop enhanced size 450,320 font "arial,8" 
+set output "./gdt_plot.${output_extension}"
+
+#set xrange [ 0 : 50000 ] noreverse nowriteback
+set xrange [ 0 : 50000 ] noreverse nowriteback
+set yrange [ 0 :] noreverse nowriteback
+set xtics font ", 6"
+set ytics font ", 8"
+
+set border 2 front linewidth 1.000
+set xtics  norangelimit nomirror
+
+set ytics border in scale 1,0.5 nomirror norotate  autojustify
+
+set style fill solid 0.45 border
+#set boxwidth 0.2 absolute
+
+# Put X and Y labels
+set xlabel "Time (ps)"
+set ylabel "GDT"
+
+#legenda
+
+#set key horizontal bottom outside box maxrows 2 font ", 8"
+#set key maxrows 1
+#set key horizontal center bottom outside
+
+set key box 
+set key horizontal reverse samplen 2 width -2 maxrows 2 maxcols 12  font ", 8"
+#set key at screen 0.5,screen 0.15 center top
+set key horizontal center bottom outside
+
+# Give the plot a title
+set title "GDT Plot "
+
+set style line 1 lt 1 lw  2.5 ps 0.225 linecolor rgb "#BF3F3F"
+set style line 2 lt 1 lw  2.5 ps 0.225 linecolor rgb "#BF833F"
+set style line 3 lt 1 lw  2.5 ps 0.225 linecolor rgb "#BDBF3F"
+set style line 4 lt 1 lw  2.5 ps 0.225 linecolor rgb "#83BF3F"
+set style line 5 lt 1 lw  2.5 ps 0.225 linecolor rgb "#3FBF50"
+set style line 6 lt 1 lw  2.5 ps 0.225 linecolor rgb "#3FBFB8"
+set style line 7 lt 1 lw  2.5 ps 0.225 linecolor rgb "#3F7FBF"
+set style line 8 lt 1 lw  2.5 ps 0.225 linecolor rgb "#3F46BF"
+set style line 9 lt 1 lw  2.5 ps 0.225 linecolor rgb "#7F3FBF"
+set style line 10 lt 1 lw  2.5 ps 0.225 linecolor rgb "#BF3FA3"
+
+#set datafile separator ","
+
+plot  '10ps/10ps-300K.txt' using 3 with lines ls 1  title "10ps" smooth bezier ,\
+      '20ps/20ps-300K.txt' using 3 with lines ls 2  title "20ps" smooth bezier ,\
+      '40ps/40ps-300K.txt' using 3 with lines ls 3  title "40ps" smooth bezier ,\
+      '60ps/60ps-300K.txt' using 3 with lines ls 4  title "60ps" smooth bezier ,\
+      '80ps/80ps-300K.txt' using 3 with lines ls 5  title "80ps" smooth bezier ,\
+      '100ps/100ps-300K.txt' using 3 with lines ls 6  title "100ps" smooth bezier ,\
+      '200ps/200ps-300K.txt' using 3 with lines ls 7  title "200ps" smooth bezier ,\
+      '300ps/300ps-300K.txt' using 3 with lines ls 8  title "300ps" smooth bezier ,\
+      '400ps/400ps-300K.txt' using 3 with lines ls 9  title "400ps" smooth bezier ,\
+      'trad/trad-300K.txt' using 3 with lines ls 10  title "trad" smooth bezier
+
+plot  '10ps/10ps-350K.txt' using 3 with lines ls 1  title "10ps" smooth bezier ,\
+      '20ps/20ps-350K.txt' using 3 with lines ls 2  title "20ps" smooth bezier ,\
+      '40ps/40ps-350K.txt' using 3 with lines ls 3  title "40ps" smooth bezier ,\
+      '60ps/60ps-350K.txt' using 3 with lines ls 4  title "60ps" smooth bezier ,\
+      '80ps/80ps-350K.txt' using 3 with lines ls 5  title "80ps" smooth bezier ,\
+      '100ps/100ps-350K.txt' using 3 with lines ls 6  title "100ps" smooth bezier ,\
+      '200ps/200ps-350K.txt' using 3 with lines ls 7  title "200ps" smooth bezier ,\
+      '300ps/300ps-350K.txt' using 3 with lines ls 8  title "300ps" smooth bezier ,\
+      '400ps/400ps-350K.txt' using 3 with lines ls 9  title "400ps" smooth bezier ,\
+      'trad/trad-350K.txt' using 3 with lines ls 10  title "trad" smooth bezier
+
+plot  '10ps/10ps-400K.txt' using 3 with lines ls 1  title "10ps" smooth bezier ,\
+      '20ps/20ps-400K.txt' using 3 with lines ls 2  title "20ps" smooth bezier ,\
+      '40ps/40ps-400K.txt' using 3 with lines ls 3  title "40ps" smooth bezier ,\
+      '60ps/60ps-400K.txt' using 3 with lines ls 4  title "60ps" smooth bezier ,\
+      '80ps/80ps-400K.txt' using 3 with lines ls 5  title "80ps" smooth bezier ,\
+      '100ps/100ps-400K.txt' using 3 with lines ls 6  title "100ps" smooth bezier ,\
+      '200ps/200ps-400K.txt' using 3 with lines ls 7  title "200ps" smooth bezier ,\
+      '300ps/300ps-400K.txt' using 3 with lines ls 8  title "300ps" smooth bezier ,\
+      '400ps/400ps-400K.txt' using 3 with lines ls 9  title "400ps" smooth bezier ,\
+      'trad/trad-400K.txt' using 3 with lines ls 10  title "trad" smooth bezier
+
+plot  '10ps/10ps-450K.txt' using 3 with lines ls 1  title "10ps" smooth bezier ,\
+      '20ps/20ps-450K.txt' using 3 with lines ls 2  title "20ps" smooth bezier ,\
+      '40ps/40ps-450K.txt' using 3 with lines ls 3  title "40ps" smooth bezier ,\
+      '60ps/60ps-450K.txt' using 3 with lines ls 4  title "60ps" smooth bezier ,\
+      '80ps/80ps-450K.txt' using 3 with lines ls 5  title "80ps" smooth bezier ,\
+      '100ps/100ps-450K.txt' using 3 with lines ls 6  title "100ps" smooth bezier ,\
+      '200ps/200ps-450K.txt' using 3 with lines ls 7  title "200ps" smooth bezier ,\
+      '300ps/300ps-450K.txt' using 3 with lines ls 8  title "300ps" smooth bezier ,\
+      '400ps/400ps-450K.txt' using 3 with lines ls 9  title "400ps" smooth bezier ,\
+      'trad/trad-450K.txt' using 3 with lines ls 10  title "trad" smooth bezier
+
+EOF

@@ -1,0 +1,95 @@
+#!/bin/bash
+# -*- coding: utf-8 -*-
+#
+#  testes.sh
+#  
+#  Copyright 2016 Carlos Eduardo Sequeiros Borja <casebor@gmail.com>
+#  
+#  This program is free software; you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation; either version 2 of the License, or
+#  (at your option) any later version.
+#  
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#  
+#  You should have received a copy of the GNU General Public License
+#  along with this program; if not, write to the Free Software
+#  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+#  MA 02110-1301, USA.
+#  
+#  
+
+
+usage="$(basename "$0") [-h] [-i inputFile] [-o outputFile]
+
+where:
+    -h  show this help text
+    -i	mdout file to parse
+    -o	name for the output file"
+
+var1=false
+var2=false
+
+while getopts ':hi:o:' option; do
+  case "$option" in
+    h)  echo "$usage"
+        exit 0
+        ;;
+    i)  input=$OPTARG
+	if [ -f $input ]; then
+	    echo "Parsing file -->"$input
+	    var1=true
+	else
+	    echo "File -->"$parm"<-- does not exist!!!"
+	    echo "$usage"
+	    exit 1
+	fi
+	;;
+    o)  output=$OPTARG
+	echo "Parsing results to --> "$output
+	var2=true
+	;;
+    :)  printf "Missing argument for -%s\n" "$OPTARG" >&2
+        echo "$usage" >&2
+        exit 1
+        ;;
+   \?)  printf "Illegal option: -%s\n" "$OPTARG" >&2
+        echo "$usage" >&2
+        exit 1
+        ;;
+  esac
+done
+shift $((OPTIND - 1))
+
+if [[ $var1 == false || $var2 == false ]]; then
+    echo "ERROR in input files"
+    echo "$usage"
+    exit 1
+fi
+
+#while read name; do
+#    echo $name
+#done < $input
+
+grep "Etot"  $input | awk '{print $3}' > .$output'_ETOT'.txt
+grep "Etot"  $input | awk '{print $6}' > .$output'_EKTOT'.txt
+grep "Etot"  $input | awk '{print $9}' > .$output'_EPTOT'.txt
+grep "ESURF" $input | awk '{print $2}' > .$output'_ESURF'.txt
+
+lins=`wc .$output"_ETOT".txt | awk '{print $1}'`
+l=`expr $lins - 2`
+
+head -n $l .$output'_ETOT'.txt  > $output'_ETOT'.txt
+head -n $l .$output'_EKTOT'.txt > $output'_EKTOT'.txt
+head -n $l .$output'_EPTOT'.txt > $output'_EPTOT'.txt
+head -n $l .$output'_ESURF'.txt > $output'_ESURF'.txt
+
+rm .$output'_ETOT'.txt .$output'_EKTOT'.txt .$output'_EPTOT'.txt .$output'_ESURF'.txt
+
+
+
+
+
