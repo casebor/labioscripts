@@ -183,9 +183,9 @@ def main():
 	print 'Maximum number of molecules reached, you need to run this script again with the output as input for another round of addition using:', args.number-max_mols, 'as quantity.'
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Returns the Mass Center of a pdb molecule.')
-    parser.add_argument('-m', '--molecule', type=argparse.FileType('r'), required=True, help='The molecule PDB file to be added around the protein. IMPORTANT!!! To facilitate the use of this script, the molecule center of mass will be moved to (0,0,0).')
-    parser.add_argument('-p', '--protein', type=argparse.FileType('r'), required=True, help='The protein PDB file to use. IMPORTANT!!! To facilitate the use of this script, the protein center of mass will be moved to (0,0,0).')
+    parser = argparse.ArgumentParser(description='Adds small molecules around a protein. Uses pdb formatted files.')
+    parser.add_argument('-m', '--molecule', type=argparse.FileType('r'), required=True, help='The molecule PDB file to be added around the protein. IMPORTANT!!! To facilitate the use of this script, the molecule center of mass will be moved to (0,0,0), but the original file will remain untouched.')
+    parser.add_argument('-p', '--protein', type=argparse.FileType('r'), required=True, help='The protein PDB file to use. IMPORTANT!!! To facilitate the use of this script, the protein center of mass will be moved to (0,0,0), but the original file will remain untouched.')
     parser.add_argument('-n', '--number', type=int, required=True, help='This parameter defines the number of molecules to be added to the protein.')
     parser.add_argument('-o', '--out', type=argparse.FileType('w'), required=True, help='The name of the output file. If the file exist, will be overwritten.')
     args = parser.parse_args()
