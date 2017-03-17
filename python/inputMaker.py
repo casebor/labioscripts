@@ -22,7 +22,7 @@
 #  
 #  
 
-import proteinMaker as pm, shutil, os
+import protein_builder as pb, shutil, os
 from optparse import OptionParser
 
 def make_leap():
@@ -194,7 +194,8 @@ def make_script(numFiles):
 clear
 tleap -f leap.in
 
-sander -O -i min.in -o min.out -r min.rst -c """
+"""
+	scri += options.prog + ' -O -i min.in -o min.out -r min.rst -c '
 	# protFun is the name of the protein-funnel complex
 	protFun = '%s-%s' %(options.inputFile[:-4], options.funnil[:-4])
 	nJump = str(options.jump*jumpFactor)
@@ -276,8 +277,8 @@ def main():
 			if options.outDir[-1] != '/':
 				options.outDir += '/'
 		archIn = open(options.inputFile, 'r')
-		protSeq = pm.get_seq(archIn)
-		prot = pm.crt_body(protSeq)
+		protSeq = pb.get_seq(options.inputFile)
+		prot = pb.crt_body(protSeq)
 		archOut = open(options.outDir + options.inputFile, 'w')
 		archOut.write(prot)
 		archOut.close()
