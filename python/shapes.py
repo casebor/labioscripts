@@ -62,12 +62,12 @@ def complexOK():
 	else:
 		elems = options.complexF.split('-')
 		if len(elems)<>4:
-			parse.error('Option complex must have 4 elements, and they must be valid Amber ATOMS!!!')
+			parser.error('Option complex must have 4 elements, and they must be valid Amber ATOMS!!!')
 			quit()
 		else:
 			for i in elems:
 				if not amberAtomType(i):
-					parse.error('Option complex must have 4 elements, and they must be valid Amber ATOMS!!!')
+					parser.error('Option complex must have 4 elements, and they must be valid Amber ATOMS!!!')
 					quit()
 			return True
 
@@ -223,10 +223,10 @@ if __name__ == '__main__':
 		parser.error('Options -l, -d and -r must be positive or 0!!!')
 		exit
 	if not amberAtomType(options.elem):
-		parse.error('Option element must be a valid Amber ATOM!!!')
+		parser.error('Option element must be a valid Amber ATOM!!!')
 		quit()
 	if len(options.elem2)>0 and not amberAtomType(options.elem2):
-		parse.error('Option with must be a valid Amber ATOM!!!')
+		parser.error('Option with must be a valid Amber ATOM!!!')
 		quit()
 		
 	main()
