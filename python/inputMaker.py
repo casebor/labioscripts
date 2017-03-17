@@ -194,9 +194,7 @@ def make_script(numFiles):
 clear
 tleap -f leap.in
 
-"""
-#pmemd -O -i min.in -o min.out -r min.rst -c """
-	scri += options.prog + ' -O -i min.in -o min.out -r min.rst -c '
+sander -O -i min.in -o min.out -r min.rst -c """
 	# protFun is the name of the protein-funnel complex
 	protFun = '%s-%s' %(options.inputFile[:-4], options.funnil[:-4])
 	nJump = str(options.jump*jumpFactor)
