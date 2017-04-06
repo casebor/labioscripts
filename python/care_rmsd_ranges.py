@@ -31,7 +31,8 @@ def main():
     """ Main function """
     data = np.loadtxt(args.infile, usecols=(args.column-1,), comments="#")
     gdts = np.zeros(10)
-    for value in data:
+    if data.size == 1:
+	value = float(data)
 	if value <= 1.0:
 	  gdts[0] += 1
 	elif value <= 1.5:
@@ -52,6 +53,28 @@ def main():
 	  gdts[8] += 1
 	else:
 	  gdts[9] += 1
+    else:
+	for value in data:
+	    if value <= 1.0:
+	      gdts[0] += 1
+	    elif value <= 1.5:
+	      gdts[1] += 1
+	    elif value <= 2.0:
+	      gdts[2] += 1
+	    elif value <= 2.5:
+	      gdts[3] += 1
+	    elif value <= 3.0:
+	      gdts[4] += 1	  
+	    elif value <= 3.5:
+	      gdts[5] += 1
+	    elif value <= 4.0:
+	      gdts[6] += 1	
+	    elif value <= 4.5:
+	      gdts[7] += 1
+	    elif value <= 5.0:
+	      gdts[8] += 1
+	    else:
+	      gdts[9] += 1
     out = '# RMSD range quantity\n'
     out +=  'Treatment X<=1.0 1.0<X<=1.5 1.5<X<=2.0 2.0<X<=2.5 2.5<X<=3.0 3.0<X<=3.5 3.5<X<=4.0 4.0<X<=4.5 4.5<X<=5.0 X>5.0\n'
     out +=  '%s ' %(path.splitext(args.infile)[0].split('/')[-1])

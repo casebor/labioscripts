@@ -31,11 +31,18 @@ def main():
     """ Main function """
     data = np.loadtxt(args.infile, usecols=(args.column-1,))
     gdts = np.zeros(10)
-    for value in data:
+    if data.size == 1:
+	value = float(data)
 	index = int(value*10)
 	if index == 10:
 	    index = 9
 	gdts[index] += 1
+    else:
+	for value in data:
+	    index = int(value*10)
+	    if index == 10:
+		index = 9
+	    gdts[index] += 1
     out = '# GDT range quantity\n'
     out +=  'Treatment Y<=0.1 0.1<Y<=0.2 0.2<Y<=0.3 0.3<Y<=0.4 0.4<Y<=0.5 0.5<Y<=0.6 0.6<Y<=0.7 0.7<Y<=0.8 0.8<Y<=0.9 0.9<Y<=1.0\n'
     #out +=  '%s ' %(path.splitext(args.infile)[0])

@@ -74,11 +74,13 @@ set key invert samplen 3 spacing 5 width 0 height 2.4
 set style histogram rowstacked title textcolor lt 0
 set style data histograms
 set xtics border in scale 0,0 nomirror rotate by -45 autojustify
+set ylabel "% of Structures" font 'Verdana,20'
+set xlabel "Treatments" font 'Verdana,20'
 """
     if args.rmsd:
-	gnu += 'set title "RMSD Ranges Distribution"\n'
+	gnu += 'set title "RMSD Ranges Distribution" font "Verdana,25"\n'
     else:
-	gnu += 'set title "GDT Ranges Distribution"\n'
+	gnu += 'set title "GDT Ranges Distribution" font "Verdana,25"\n'
     gnu += """set yrange [ 0.00 : 100.00 ] noreverse nowriteback
 """
     gnu += "set xrange [ -0.75 : %.1f ]\n" %(len(xtics)-0.25)
