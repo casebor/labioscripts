@@ -43,13 +43,16 @@ def main():
 	    if index == 10:
 		index = 9
 	    gdts[index] += 1
+    gdts_inv = np.flipud(gdts)
     out = '# GDT range quantity\n'
-    out +=  'Treatment Y<=0.1 0.1<Y<=0.2 0.2<Y<=0.3 0.3<Y<=0.4 0.4<Y<=0.5 0.5<Y<=0.6 0.6<Y<=0.7 0.7<Y<=0.8 0.8<Y<=0.9 0.9<Y<=1.0\n'
+    out +=  'Treatment X>0.9 X>0.8 X>0.7 X>0.6 X>0.5 X>0.4 X>0.3 X>0.2 X>0.1 X<=0.1\n'
+    #out +=  'Treatment 0.9<Y<=1.0 0.8<Y<=0.9 0.7<Y<=0.8 0.6<Y<=0.7 0.5<Y<=0.6 0.4<Y<=0.5 0.3<Y<=0.4 0.2<Y<=0.3 0.1<Y<=0.2 Y<=0.1\n'
+    #out +=  'Treatment Y<=0.1 0.1<Y<=0.2 0.2<Y<=0.3 0.3<Y<=0.4 0.4<Y<=0.5 0.5<Y<=0.6 0.6<Y<=0.7 0.7<Y<=0.8 0.8<Y<=0.9 0.9<Y<=1.0\n'
     #out +=  '%s ' %(path.splitext(args.infile)[0])
-    out +=  '%s ' %((path.basename(args.infile)).split('.')[0])
-    for value in gdts:
+    out +=  '%s ' %('.'.join((path.basename(args.infile)).split('.')[:-1]))
+    for value in gdts_inv:
 	out += '%d ' %(value)
-    out += '%d\n' %(gdts.sum())
+    out += '%d\n' %(gdts_inv.sum())
     args.outfile.write(out)
 
 if __name__ == '__main__':

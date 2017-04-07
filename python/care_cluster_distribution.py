@@ -33,7 +33,7 @@ def main():
     data = np.loadtxt(args.cluster, usecols=(1,), dtype=int)
     clusters = [0]*clust_qty
     for i in data:
-	clusters[i-1] += 1
+	clusters[i] += 1
     out_data = '#Cluster\tStructures\n'
     total = 0
     for i,cluster in enumerate(clusters):
