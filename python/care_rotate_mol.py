@@ -29,23 +29,23 @@ import numpy as np
 def main():
     """ Main function """
     if args.axis > 2 or args.axis < 0:
-	print 'Invalid option for axis, valid options are 0, 1 or 2.\n'
-	parser.print_help()
+        print 'Invalid option for axis, valid options are 0, 1 or 2.\n'
+        parser.print_help()
     angle = radians(args.angle)
     cos_angle = cos(angle)
     sin_angle = sin(angle)
     if args.axis == 0:
-	rot_matrix = np.array([[1,0,0], [0,cos_angle,-sin_angle], [0,sin_angle,cos_angle]])
+        rot_matrix = np.array([[1,0,0], [0,cos_angle,-sin_angle], [0,sin_angle,cos_angle]])
     elif args.axis == 1:
-	rot_matrix = np.array([[cos_angle,0,sin_angle], [0,1,0], [-sin_angle,0,cos_angle]])
+        rot_matrix = np.array([[cos_angle,0,sin_angle], [0,1,0], [-sin_angle,0,cos_angle]])
     else:
-	rot_matrix = np.array([[cos_angle,-sin_angle,0], [sin_angle,cos_angle,0], [0,0,1]])
+        rot_matrix = np.array([[cos_angle,-sin_angle,0], [sin_angle,cos_angle,0], [0,0,1]])
     pdb_file = list(args.infile)
     for i in range(len(pdb_file)):
-	if 'ATOM' in pdb_file[i] or 'HETATM' in pdb_file[i]:
-	    crd = np.array([float(pdb_file[i][30:38]), float(pdb_file[i][38:46]), float(pdb_file[i][46:54])])
-	    crd = np.dot(rot_matrix,crd)
-	    pdb_file[i] = '%s% 8.3f% 8.3f% 8.3f%s' %(pdb_file[i][:30], crd[0], crd[1], crd[2], pdb_file[i][54:])
+        if 'ATOM' in pdb_file[i] or 'HETATM' in pdb_file[i]:
+            crd = np.array([float(pdb_file[i][30:38]), float(pdb_file[i][38:46]), float(pdb_file[i][46:54])])
+            crd = np.dot(rot_matrix,crd)
+            pdb_file[i] = '%s% 8.3f% 8.3f% 8.3f%s' %(pdb_file[i][:30], crd[0], crd[1], crd[2], pdb_file[i][54:])
     args.outfile.write(''.join(pdb_file))
 
 if __name__ == '__main__':
