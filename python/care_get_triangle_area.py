@@ -48,15 +48,17 @@ def get_area (residues):
     point_A = np.loadtxt('_temporary_pos_%s.txt'%(residues[0]), usecols=(1,2,3))
     point_B = np.loadtxt('_temporary_pos_%s.txt'%(residues[1]), usecols=(1,2,3))
     point_C = np.loadtxt('_temporary_pos_%s.txt'%(residues[2]), usecols=(1,2,3))
-    areas = '#Frame\tArea\tAB\tAC\n'
+    areas = '#Frame\tArea\tAB\tAC\tBC\n'
     for i in range(len(point_A)):
         vec_AB = point_B[i] - point_A[i]
         vec_AC = point_C[i] - point_A[i]
+        vec_BC = point_B[i] - point_C[i]
         cross_vec = np.cross(vec_AB, vec_AC)
         dist_AB = np.linalg.norm(vec_AB)
         dist_AC = np.linalg.norm(vec_AC)
+        dist_BC = np.linalg.norm(vec_BC)
         area = (np.linalg.norm(cross_vec))/2.0
-        areas += 'Frame\t%d\t%f\t%f\t%f\n' %(i, area, dist_AB, dist_AC)
+        areas += 'Frame\t%d\t%f\t%f\t%f\t%f\n' %(i, area, dist_AB, dist_AC, dist_BC)
     with open(args.outfile, 'w') as outfile:
         outfile.write(areas)
 
