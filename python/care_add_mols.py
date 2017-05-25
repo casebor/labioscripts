@@ -24,6 +24,49 @@
 
 import argparse
 import math
+import numpy as np
+
+def rotate_mol (pdb_str):
+    """ Rotate the molecule to obtain the better orientation.
+        First rotate in X axis, then Y axis and finally Z axis.
+    """
+    import sys
+    min_bounds = [sys.float_info.max, sys.float_info.max, sys.float_info.max]
+    opt_pdb = pdb_str
+    axixes = [0,2,1]
+    #for axis in range(0,3):
+    for axis in axixes:
+        for angle in range(181):
+            angle = math.radians(angle)
+            cos_angle = math.cos(angle)
+            sin_angle = math.sin(angle)
+            if axis == 0:
+                rot_matrix = np.array([[1,0,0], [0,cos_angle,-sin_angle], [0,sin_angle,cos_angle]])
+            elif axis == 1:
+                rot_matrix = np.array([[cos_angle,0,sin_angle], [0,1,0], [-sin_angle,0,cos_angle]])
+            else:
+                rot_matrix = np.array([[cos_angle,-sin_angle,0], [sin_angle,cos_angle,0], [0,0,1]])
+            pdb_file = pdb_str.split('\n')
+            for i in range(len(pdb_file)):
+                if 'ATOM' in pdb_file[i] or 'HETATM' in pdb_file[i]:
+                    crd = np.array([float(pdb_file[i][30:38]), float(pdb_file[i][38:46]), float(pdb_file[i][46:54])])
+                    crd = np.dot(rot_matrix, crd)
+                    pdb_file[i] = '%s% 8.3f% 8.3f% 8.3f%s' %(pdb_file[i][:30], crd[0], crd[1], crd[2], pdb_file[i][54:])
+            pdb_file = '\n'.join(pdb_file)
+            bounds_temp = get_bounds(pdb_file)
+            if axis == 0:
+                if bounds_temp[1] < min_bounds[1]:
+                    min_bounds[1] = bounds_temp[1]
+                    opt_pdb = pdb_file
+            elif axis == 1:
+                if bounds_temp[0] < min_bounds[0]:
+                    min_bounds[0] = bounds_temp[0]
+                    opt_pdb = pdb_file
+            else:
+                if bounds_temp[1] < min_bounds[1]:
+                    min_bounds[1] = bounds_temp[1]
+                    opt_pdb = pdb_file
+    return opt_pdb
 
 def get_mass_center(pdb_str):
     """ Returns the mass center of a molecule.
@@ -45,7 +88,7 @@ def get_mass_center(pdb_str):
     point[2] /= atoms
     return point
 
-def move_mol(pdb_str, point):
+def move_mol(pdb_str, point, resnumber=0):
     """ Move all the atoms of a molecule the coordinates of a given point.
     """
     pdb_list = pdb_str.split('\n')
@@ -56,7 +99,10 @@ def move_mol(pdb_str, point):
             crd[0] += point[0]
             crd[1] += point[1]
             crd[2] += point[2]
-            pdb_list[i] = '%s% 8.3f% 8.3f% 8.3f%s' %(pdb_list[i][:30], crd[0], crd[1], crd[2], pdb_list[i][54:])
+            if resnumber == 0:
+                pdb_list[i] = '%s% 8.3f% 8.3f% 8.3f%s' %(pdb_list[i][:30], crd[0], crd[1], crd[2], pdb_list[i][54:])
+            else:
+                pdb_list[i] = '%s%3d%s% 8.3f% 8.3f% 8.3f%s' %(pdb_list[i][:23], resnumber, pdb_list[i][26:30], crd[0], crd[1], crd[2], pdb_list[i][54:])
         i += 1
     return '\n'.join(pdb_list)
 
@@ -91,6 +137,9 @@ def main():
     prot_mc = get_mass_center(prot_str)
     mol_zero_mc = move_mol(mol_str, [-mol_mc[0],-mol_mc[1],-mol_mc[2]])
     prot_zero_mc = move_mol(prot_str, [-prot_mc[0],-prot_mc[1],-prot_mc[2]])
+    
+    #prot_zero_mc = rotate_mol(prot_zero_mc)
+    
     mol_bounds = get_bounds(mol_zero_mc)
     prot_bounds = get_bounds(prot_zero_mc)
     box_point = [prot_bounds[0]+mol_bounds[0],prot_bounds[1]+mol_bounds[1],prot_bounds[2]+mol_bounds[2]]
@@ -133,14 +182,14 @@ def main():
                 j = -ji/2
             if cont_x<mols_x:
                 temp_mol = move_mol(mol_zero_mc, points[0])
-                temp_mol = move_mol(temp_mol, [0,j*mol_point[1],0])
+                temp_mol = move_mol(temp_mol, [0,j*mol_point[1],0], mols_added+4)
                 output_mol += temp_mol
                 mols_added += 1
                 cont += 1
                 if mols_added == args.number:
                     break
                 temp_mol = move_mol(mol_zero_mc, points[1])
-                temp_mol = move_mol(temp_mol, [0,-j*mol_point[1],0])
+                temp_mol = move_mol(temp_mol, [0,-j*mol_point[1],0], mols_added+4)
                 output_mol += temp_mol
                 mols_added += 1
                 cont += 1
@@ -148,14 +197,14 @@ def main():
                     break
             if cont_y<mols_y:
                 temp_mol = move_mol(mol_zero_mc, points[2])
-                temp_mol = move_mol(temp_mol, [0,0,j*mol_point[2]])
+                temp_mol = move_mol(temp_mol, [0,0,j*mol_point[2]], mols_added+4)
                 output_mol += temp_mol
                 mols_added += 1
                 cont += 1
                 if mols_added == args.number:
                     break
                 temp_mol = move_mol(mol_zero_mc, points[3])
-                temp_mol = move_mol(temp_mol, [0,0,-j*mol_point[2]])
+                temp_mol = move_mol(temp_mol, [0,0,-j*mol_point[2]], mols_added+4)
                 output_mol += temp_mol
                 mols_added += 1
                 cont += 1
@@ -163,14 +212,14 @@ def main():
                     break
             if cont_z<mols_z:
                 temp_mol = move_mol(mol_zero_mc, points[4])
-                temp_mol = move_mol(temp_mol, [j*mol_point[0],0,0])
+                temp_mol = move_mol(temp_mol, [j*mol_point[0],0,0], mols_added+4)
                 output_mol += temp_mol
                 mols_added += 1
                 cont += 1
                 if mols_added == args.number:
                     break
                 temp_mol = move_mol(mol_zero_mc, points[5])
-                temp_mol = move_mol(temp_mol, [-j*mol_point[0],0,0])
+                temp_mol = move_mol(temp_mol, [-j*mol_point[0],0,0], mols_added+4)
                 output_mol += temp_mol
                 mols_added += 1
                 cont += 1
