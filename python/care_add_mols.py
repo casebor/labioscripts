@@ -182,14 +182,14 @@ def main():
                 j = -ji/2
             if cont_x<mols_x:
                 temp_mol = move_mol(mol_zero_mc, points[0])
-                temp_mol = move_mol(temp_mol, [0,j*mol_point[1],0], mols_added+4)
+                temp_mol = move_mol(temp_mol, [0,j*mol_point[1],0], mols_added+1)
                 output_mol += temp_mol
                 mols_added += 1
                 cont += 1
                 if mols_added == args.number:
                     break
                 temp_mol = move_mol(mol_zero_mc, points[1])
-                temp_mol = move_mol(temp_mol, [0,-j*mol_point[1],0], mols_added+4)
+                temp_mol = move_mol(temp_mol, [0,-j*mol_point[1],0], mols_added+1)
                 output_mol += temp_mol
                 mols_added += 1
                 cont += 1
@@ -197,14 +197,14 @@ def main():
                     break
             if cont_y<mols_y:
                 temp_mol = move_mol(mol_zero_mc, points[2])
-                temp_mol = move_mol(temp_mol, [0,0,j*mol_point[2]], mols_added+4)
+                temp_mol = move_mol(temp_mol, [0,0,j*mol_point[2]], mols_added+1)
                 output_mol += temp_mol
                 mols_added += 1
                 cont += 1
                 if mols_added == args.number:
                     break
                 temp_mol = move_mol(mol_zero_mc, points[3])
-                temp_mol = move_mol(temp_mol, [0,0,-j*mol_point[2]], mols_added+4)
+                temp_mol = move_mol(temp_mol, [0,0,-j*mol_point[2]], mols_added+1)
                 output_mol += temp_mol
                 mols_added += 1
                 cont += 1
@@ -212,14 +212,14 @@ def main():
                     break
             if cont_z<mols_z:
                 temp_mol = move_mol(mol_zero_mc, points[4])
-                temp_mol = move_mol(temp_mol, [j*mol_point[0],0,0], mols_added+4)
+                temp_mol = move_mol(temp_mol, [j*mol_point[0],0,0], mols_added+1)
                 output_mol += temp_mol
                 mols_added += 1
                 cont += 1
                 if mols_added == args.number:
                     break
                 temp_mol = move_mol(mol_zero_mc, points[5])
-                temp_mol = move_mol(temp_mol, [-j*mol_point[0],0,0], mols_added+4)
+                temp_mol = move_mol(temp_mol, [-j*mol_point[0],0,0], mols_added+1)
                 output_mol += temp_mol
                 mols_added += 1
                 cont += 1
