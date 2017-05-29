@@ -81,7 +81,7 @@ if __name__ == '__main__':
     parser.add_argument('-x', '--trajin', action='store', required=True, dest='trajin', help="The trajectory file from GROMACS. Usually a .xtc file.")
     parser.add_argument('-g', '--gro', action='store', required=True, dest='gro', help="The .gro file used in the GROMACS simulation. This file is needed for the generation of indexes.")
     parser.add_argument('-r', '--resids', action='store', required=True, dest='resids', help="The index number of the residues used to generate the triangle. Use comma separated, example: 118,152,198")
-    parser.add_argument('-t', '--topol', action='store', required=True, dest='topol', help="The topology file of the simulation.")
+    parser.add_argument('-t', '--tpr', action='store', required=True, dest='topol', help="The .tpr file of the simulation.")
     parser.add_argument('-k', '--keep', action='store_true', help="Flag to keep the temporary files created. Default is False")
     parser.add_argument('-c', '--calpha', action='store_true', help="Flag to use the alpha carbons instead of center of mass. Default is False")
     parser.add_argument('-o', '--out', action='store', dest='outfile', default='areas.txt', help="Output file where the data will be stored. Default is areas.txt")
