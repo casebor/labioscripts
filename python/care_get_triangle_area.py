@@ -31,7 +31,10 @@ def make_index_files (residues):
     for res in residues:
         order = 'gmx make_ndx -f %s -o _temporary_resid_%s.ndx<<EOF\n' %(args.gro, res)
         order += 'del 0-25\n'
-        order += 'r %s\n' %(res)
+        if args.calpha:
+            order += 'r %s & a CA\n' %(res)
+        else:
+            order += 'r %s\n' %(res)
         order += 'q\nEOF\n'
         os.system(order)
 
@@ -83,7 +86,7 @@ if __name__ == '__main__':
     parser.add_argument('-r', '--resids', action='store', required=True, dest='resids', help="The index number of the residues used to generate the triangle. Use comma separated, example: 118,152,198")
     parser.add_argument('-t', '--tpr', action='store', required=True, dest='topol', help="The .tpr file of the simulation.")
     parser.add_argument('-k', '--keep', action='store_true', help="Flag to keep the temporary files created. Default is False")
-    parser.add_argument('-c', '--calpha', action='store_true', help="Flag to use the alpha carbons instead of center of mass. Default is False")
+    parser.add_argument('-c', '--calpha', action='store_true', dest='calpha', help="Flag to use the alpha carbons instead of center of mass (EXPERIMENTAL). Default is False")
     parser.add_argument('-o', '--out', action='store', dest='outfile', default='areas.txt', help="Output file where the data will be stored. Default is areas.txt")
     args = parser.parse_args()
     main()
