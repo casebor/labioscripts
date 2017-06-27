@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-#  moveX.py
+#  care_move_mol.py
 #  
 #  Copyright 2015 Carlos Eduardo Sequeiros Borja <casebor@gmail.com>
 #  
