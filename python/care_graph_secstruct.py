@@ -33,12 +33,16 @@ def error_input():
     quit()
 
 def main():
-    with open(options.infile, 'r') as infile:
-	residues = infile.readline().split()[1:]
     name_in = basename(options.infile).split('.')[0]
     name_out = basename(options.output).split('.')[0]
     data = loadtxt(options.infile, dtype=int)
-    data = data[:,1:].T
+    with open(options.infile, 'r') as infile:
+        residues = infile.readline().split()[1:]
+    if options.range[0]==0 and options.range[1]==0:
+        data = data[:,1:].T
+    else:
+        residues = residues[options.range[0]-1:options.range[1]]
+        data = data[:,options.range[0]:options.range[1]+1].T
     gnufile = """set terminal pngcairo size 2048,1080 enhanced font 'Verdana,15'
 set output \""""
     gnufile += name_out + """.png"
@@ -48,7 +52,7 @@ set view map
 set tic scale 0
 set ytics("""
     for i, res in enumerate(residues):
-	gnufile += '"%s" %s, ' %(res, i)
+        gnufile += '"%s" %s, ' %(res, i)
     gnufile = gnufile[:-2] + """)
 set cbrange [-0.500:7.500]
 #set cbtics 0.000 7.000 1.0
@@ -62,14 +66,14 @@ set ylabel ""
     gnufile += 'set xrange [-0.5: %s.5]\n' %(len(data[0])-1)
     gnufile += 'splot "%s_data.txt" matrix with image' %(name_in)
     with open(name_in + '.gnu', 'w') as gnuin:
-	gnuin.write(gnufile)
+        gnuin.write(gnufile)
     dataout = ''
     for row in data:
-	for column in row:
-	    dataout += '%s ' %(column)
-	dataout += '\n'
+        for column in row:
+            dataout += '%s ' %(column)
+        dataout += '\n'
     with open(name_in + '_data.txt', 'w') as d_out:
-	d_out.write(dataout)
+        d_out.write(dataout)
     system('gnuplot %s.gnu' %(name_in))
     system('rm %s.gnu %s_data.txt' %(name_in, name_in))
     return 0
@@ -79,5 +83,6 @@ if __name__ == '__main__':
     parser = OptionParser(usage)
     parser.add_option('-i', '--in', action='store', type='string', dest='infile', help='The input data file where the data is.')
     parser.add_option('-o', '--out', action='store', type='string', dest='output', help='Name for the output file. Default is "plot.png".', default='plot')
+    parser.add_option('-r', '--range', action='store', type='int', nargs=2, dest='range', help='If you just want a range of the protein to be plotted, use this option', default=(0, 0))
     (options, args) = parser.parse_args()
     main()

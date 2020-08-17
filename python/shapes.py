@@ -37,7 +37,7 @@ def amberAtomType(atom):
 	 'CQ', 'CR', 'CT', 'CV', 'CW', 'C*', 'CD', 'CE', 'CF', 'CG', 'CH', 'CI', 'CJ', 'CP', 'C2', 'C3',\
 	 'N', 'NA', 'NB', 'NC', 'NT', 'N2', 'N3', 'N*', 'O', 'OH', 'OS', 'OW', 'O2', 'S', 'SH', 'P',\
 	 'CU', 'C0', 'I', 'IM', 'MG', 'QC', 'QK', 'QL', 'QN', 'QR', 'LP')'''
-	amberAtoms = {'C', 'O', 'N', 'S', 'P', 'MG', 'F', 'Ar', 'CL', 'NA', 'H', 'BR', 'CA', 'ZN'}
+	amberAtoms = {'C', 'O', 'N', 'S', 'P', 'MG', 'F', 'Ar', 'CL', 'NA', 'H', 'BR', 'CA', 'ZN', 'H'}
 	return atom in amberAtoms
 
 def isANearB(elemA, aX, aY, aZ, radA, cadPdb):
@@ -226,7 +226,7 @@ if __name__ == '__main__':
 		parser.error('Option element must be a valid Amber ATOM!!!')
 		quit()
 	if len(options.elem2)>0 and not amberAtomType(options.elem2):
-		parser.error('Option with must be a valid Amber ATOM!!!')
+		parser.error("Option with must be a valid Amber ATOM!!!\n\t'C', 'O', 'N', 'S', 'P', 'MG', 'F', 'Ar', 'CL', 'NA', 'H', 'BR', 'CA', 'ZN', 'H'")
 		quit()
 		
 	main()
